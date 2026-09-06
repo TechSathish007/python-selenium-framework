@@ -1,48 +1,47 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 class TextBoxPage:
     def __init__(self, driver):
         self.driver = driver
-        # We store the locators here at the top
-        self.url = "https://demoqa.com/text-box"
-        self.name_input = (By.ID, "userName")
-        self.email_input = (By.ID, "userEmail")
-        self.submit_btn = (By.ID, "submit")
-        self.output_name = (By.ID, "name")
+        # THIS IS THE BRAIN: Wait up to 10 seconds for things to happen
+        self.wait = WebDriverWait(driver, 10) 
 
-    # We store the actions here at the bottom
     def load(self):
-        self.driver.get(self.url)
+        self.driver.get("https://demoqa.com/text-box")
 
     def fill_form(self, name, email):
-        self.driver.find_element(*self.name_input).send_keys(name)
-        self.driver.find_element(*self.email_input).send_keys(email)
+        # SMART WAIT: Wait exactly until the box is visible before typing
+        name_box = self.wait.until(EC.visibility_of_element_located((By.ID, "userName")))
+        name_box.send_keys(name)
         
+        self.driver.find_element(By.ID, "userEmail").send_keys(email)
+
     def click_submit(self):
-        btn = self.driver.find_element(*self.submit_btn)
-        self.driver.execute_script("arguments[0].scrollIntoView();", btn)
-        self.driver.execute_script("arguments[0].click();", btn)
+        # SMART WAIT: Wait exactly until the button is clickable
+        submit_btn = self.wait.until(EC.element_to_be_clickable((By.ID, "submit")))
+        self.driver.execute_script("arguments[0].scrollIntoView();", submit_btn) # Scroll down to it
+        self.driver.execute_script("arguments[0].click();", submit_btn) # Click it safely
 
     def get_output_name(self):
-        return self.driver.find_element(*self.output_name).text
-
-
-
+        # SMART WAIT: Wait for the result to pop up on screen
+        output = self.wait.until(EC.visibility_of_element_located((By.ID, "name")))
+        return output.text
 
 class RadioButtonPage:
     def __init__(self, driver):
         self.driver = driver
-        # The locators for the kitchen
-        self.url = "https://demoqa.com/radio-button"
-        self.yes_radio_label = (By.XPATH, "//label[@for='yesRadio']")
-        self.success_text = (By.CLASS_NAME, "text-success")
+        self.wait = WebDriverWait(driver, 10)
 
-    # The Waiter's actions
     def load(self):
-        self.driver.get(self.url)
+        self.driver.get("https://demoqa.com/radio-button")
 
     def click_yes(self):
-        self.driver.find_element(*self.yes_radio_label).click()
+        # SMART WAIT: Wait for the Yes button to be clickable
+        yes_label = self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "label[for='yesRadio']")))
+        yes_label.click()
 
     def get_success_message(self):
-        return self.driver.find_element(*self.success_text).text
+        message = self.wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "text-success")))
+        return message.text
