@@ -33,11 +33,9 @@ def driver(request):
     yield driver
     
     # 5. Quit when finished
-    driver.quit()import os
-
-yield driver
     driver.quit()
 
+# --- ENVIRONMENT METADATA FIX ---
 import os
 
 def pytest_sessionfinish(session, exitstatus):
@@ -47,4 +45,3 @@ def pytest_sessionfinish(session, exitstatus):
         file.write("OS=Windows\n")
         file.write("Engineer=Sathish R\n")
         file.write("Framework=Python Selenium Pytest\n")
-
