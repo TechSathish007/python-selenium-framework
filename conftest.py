@@ -35,13 +35,16 @@ def driver(request):
     # 5. Quit when finished
     driver.quit()import os
 
+yield driver
+    driver.quit()
+
+import os
+
 def pytest_sessionfinish(session, exitstatus):
-    # This creates the Allure environment file automatically
     os.makedirs("allure-results", exist_ok=True)
     with open("allure-results/environment.properties", "w") as file:
         file.write("Environment=QA\n")
         file.write("OS=Windows\n")
         file.write("Engineer=Sathish R\n")
         file.write("Framework=Python Selenium Pytest\n")
-
 
